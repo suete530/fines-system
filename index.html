@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>BSIS-1 · Fines Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #9acd32;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'SF Pro Text', 'Courier New', monospace, system-ui;
+            padding: 20px;
+        }
+
+        .header-bar {
+            background: #2d3e5f;
+            color: white;
+            padding: 15px 20px;
+            margin: -20px -20px 20px -20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-bar h1 {
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8rem;
+        }
+
+        .notebook-container {
+            max-width: 750px;
+            margin: 0 auto;
+            background: #fffef7;
+            border-radius: 32px;
+            padding: 20px 24px 35px;
+            border: 1px solid #e9e2b3;
+        }
+
+        h2 {
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            font-size: 1.8rem;
+            text-align: center;
+            border-bottom: 3px dashed #ffb347;
+            display: inline-block;
+            margin: 0 auto 12px;
+            padding-bottom: 6px;
+            background: linear-gradient(135deg, #1e2f5e 0%, #2c3e6d 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .title-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .date-badge {
+            background: #f3efcf;
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-family: monospace;
+            font-weight: bold;
+            font-size: 1rem;
+            color: #4a3b1c;
+            border: 1px solid #e2d6a3;
+            margin-top: 5px;
+        }
+
+        .section-selector {
+            background: #e8f4e8;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin: 10px 0 15px;
+            border-left: 8px solid #28a745;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .section-selector label {
+            font-weight: bold;
+            color: #1e5631;
+        }
+
+        .section-selector select {
+            padding: 8px 15px;
+            border-radius: 30px;
+            border: 1px solid #a8d4a8;
+            background: white;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .btn-add-section {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .stats-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 18px 20px;
+            margin: 10px 0 18px;
+            color: white;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .input-panel {
+            background: #f5f0df;
+            border-radius: 28px;
+            padding: 18px 20px;
+            margin: 10px 0 20px;
+            border-left: 8px solid #ffaa44;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #7b6236;
+            margin-bottom: 4px;
+        }
+
+        .field input, .field select {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 60px;
+            border: 1px solid #e2cf9a;
+            background: white;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        button {
+            background: #ffaa44;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .btn-clear {
+            background: #c0b07a;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-filter-bar {
+            background: #e8f0f8;
+            border-radius: 20px;
+            padding: 12px 18px;
+            margin: 10px 0 15px;
+            border-left: 8px solid #4682b4;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter-bar input {
+            flex: 1;
+            min-width: 120px;
+            padding: 8px 14px;
+            border-radius: 30px;
+            border: 1px solid #b8c8d8;
+        }
+
+        .search-filter-bar select {
+            padding: 8px 12px;
+            border-radius: 30px;
+            border: 1px solid #b8c8d8;
+        }
+
+        .fines-list-section {
+            background: #fef9e6;
+            border-radius: 28px;
+            padding: 18px 20px;
+            margin: 15px 0 18px;
+            border-left: 8px solid #ffaa44;
+        }
+
+        .list-header {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #bf5e00;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            border-bottom: 2px dotted #ffcd94;
+            padding-bottom: 8px;
+        }
+
+        .btn-export {
+            background: #17a2b8;
+            color: white;
+            font-size: 0.75rem;
+            padding: 6px 12px;
+        }
+
+        .student-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .student-entry {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            border-bottom: 1px dashed #eedbae;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .student-name {
+            font-weight: 800;
+        }
+
+        .gender-badge {
+            font-size: 0.7rem;
+            background: #d9d0a5;
+            padding: 2px 12px;
+            border-radius: 30px;
+        }
+
+        .fine-amount {
+            font-weight: 800;
+            color: #b13e3e;
+            background: #fff0d4;
+            padding: 4px 14px;
+            border-radius: 30px;
+        }
+
+        .status-paid {
+            background: #28a745;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .status-unpaid {
+            background: #dc3545;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+        }
+
+        .entry-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            padding: 4px 10px;
+            font-size: 0.8rem;
+            border: 1px solid #ddce9a;
+        }
+
+        .total-fines {
+            margin-top: 20px;
+            background: #eeddbb;
+            border-radius: 30px;
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #b89454;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 12px; }
+            .student-entry { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <h1>📋 BSIS Fines Manager</h1>
+        <a href="/logout" class="logout-btn">🚪 Logout</a>
+    </div>
+
+    <div class="notebook-container">
+        <div class="title-wrapper">
+            <h2>STUDENT FINES</h2>
+            <div class="date-badge" id="date"></div>
+        </div>
+
+        <div class="section-selector">
+            <label>📚 Section:</label>
+            <select id="sectionSelect"></select>
+            <button class="btn-add-section" id="addSectionBtn">➕ New Section</button>
+        </div>
+
+        <div class="stats-panel" id="statsPanel">
+            <div class="stat-card">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value" id="statTotalStudents">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Fines</div>
+                <div class="stat-value" id="statTotalFines">₱0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Average</div>
+                <div class="stat-value" id="statAvgFine">₱0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Highest</div>
+                <div class="stat-value" id="statHighestFine">₱0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Paid/Unpaid</div>
+                <div class="stat-value" id="statPaidUnpaid">0/0</div>
+            </div>
+        </div>
+
+        <div class="input-panel">
+            <div class="input-group">
+                <div class="field">
+                    <label>👤 Full Name</label>
+                    <input type="text" id="studentName" placeholder="e.g., Maria Santos">
+                </div>
+                <div class="field">
+                    <label>⚥ Gender</label>
+                    <select id="studentGender">
+                        <option value="male">♂ Male</option>
+                        <option value="female">♀ Female</option>
+                        <option value="non-binary">⚧ Non-binary</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label>💰 Fine (₱)</label>
+                    <input type="number" id="studentFine" placeholder="0.00" step="0.01" value="0">
+                </div>
+                <div class="field">
+                    <label>📊 Status</label>
+                    <select id="studentStatus">
+                        <option value="unpaid">Unpaid</option>
+                        <option value="paid">Paid</option>
+                    </select>
+                </div>
+                <div class="action-buttons">
+                    <button id="addBtn">➕ ADD</button>
+                    <button id="clearFormBtn" class="btn-clear">🗑️ Clear</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-filter-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Search...">
+            <select id="filterGender">
+                <option value="all">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+            <select id="filterStatus">
+                <option value="all">All Status</option>
+                <option value="unpaid">Unpaid</option>
+                <option value="paid">Paid</option>
+            </select>
+            <select id="sortBy">
+                <option value="name">Name</option>
+                <option value="fine-high">Fine ↓</option>
+                <option value="fine-low">Fine ↑</option>
+            </select>
+        </div>
+
+        <div class="fines-list-section">
+            <div class="list-header">
+                <span>📌 FINES LEDGER</span>
+                <button class="btn-export" id="exportCsvBtn">📥 CSV</button>
+            </div>
+
+            <div class="student-list" id="studentListContainer">
+                <div class="no-results">Loading...</div>
+            </div>
+
+            <div class="total-fines">
+                <span>💰 TOTAL</span>
+                <span id="totalAmount">₱ 0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let students = [];
+        let currentSectionId = null;
+        let editModeId = null;
+        let searchQuery = '';
+        let filterGender = 'all';
+        let filterStatus = 'all';
+        let sortBy = 'name';
+
+        const sectionSelect = document.getElementById('sectionSelect');
+        const addSectionBtn = document.getElementById('addSectionBtn');
+        const nameInput = document.getElementById('studentName');
+        const genderSelect = document.getElementById('studentGender');
+        const fineInput = document.getElementById('studentFine');
+        const statusSelect = document.getElementById('studentStatus');
+        const addBtn = document.getElementById('addBtn');
+        const clearFormBtn = document.getElementById('clearFormBtn');
+        const studentListContainer = document.getElementById('studentListContainer');
+        const searchInput = document.getElementById('searchInput');
+        const filterGenderSelect = document.getElementById('filterGender');
+        const filterStatusSelect = document.getElementById('filterStatus');
+        const sortBySelect = document.getElementById('sortBy');
+        const exportCsvBtn = document.getElementById('exportCsvBtn');
+
+        // Date
+        document.getElementById('date').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+        });
+
+        // Load sections
+        async function loadSections() {
+            const res = await fetch('/api/sections');
+            const sections = await res.json();
+            sectionSelect.innerHTML = sections.map(s => 
+                `<option value="${s.id}">${s.name}</option>`
+            ).join('');
+            
+            if (sections.length > 0 && !currentSectionId) {
+                currentSectionId = sections[0].id;
+                loadStudents();
+            }
+        }
+
+        // Load students
+        async function loadStudents() {
+            const res = await fetch(`/api/students?section_id=${currentSectionId}`);
+            students = await res.json();
+            renderStudentList();
+            updateStats();
+        }
+
+        // Update stats
+        async function updateStats() {
+            const res = await fetch(`/api/stats?section_id=${currentSectionId}`);
+            const stats = await res.json();
+            
+            document.getElementById('statTotalStudents').textContent = stats.totalStudents;
+            document.getElementById('statTotalFines').textContent = '₱' + stats.totalFines.toFixed(0);
+            document.getElementById('statAvgFine').textContent = '₱' + stats.avgFine.toFixed(0);
+            document.getElementById('statHighestFine').textContent = '₱' + stats.highestFine.toFixed(0);
+            document.getElementById('statPaidUnpaid').textContent = stats.paid + '/' + stats.unpaid;
+        }
+
+        // Filter students
+        function getFilteredStudents() {
+            let filtered = [...students];
+            
+            if (searchQuery) {
+                const q = searchQuery.toLowerCase();
+                filtered = filtered.filter(s => s.name.toLowerCase().includes(q));
+            }
+            if (filterGender !== 'all') {
+                filtered = filtered.filter(s => s.gender === filterGender);
+            }
+            if (filterStatus !== 'all') {
+                filtered = filtered.filter(s => s.status === filterStatus);
+            }
+            
+            if (sortBy === 'fine-high') {
+                filtered.sort((a, b) => b.fine - a.fine);
+            } else if (sortBy === 'fine-low') {
+                filtered.sort((a, b) => a.fine - b.fine);
+            } else {
+                filtered.sort((a, b) => a.name.localeCompare(b.name));
+            }
+            
+            return filtered;
+        }
+
+        // Render list
+        function renderStudentList() {
+            const filtered = getFilteredStudents();
+            
+            if (filtered.length === 0) {
+                studentListContainer.innerHTML = '<div class="no-results">✨ No results ✨</div>';
+                document.getElementById('totalAmount').textContent = '₱ 0.00';
+                return;
+            }
+            
+            let total = 0;
+            let html = '';
+            
+            filtered.forEach(s => {
+                total += s.fine;
+                const genderLabel = s.gender === 'male' ? '♂ male' : s.gender === 'female' ? '♀ female' : '⚧ NB';
+                const icon = s.gender === 'male' ? '👨' : s.gender === 'female' ? '👩' : '🧑';
+                const statusClass = s.status === 'paid' ? 'status-paid' : 'status-unpaid';
+                const statusLabel = s.status === 'paid' ? '✓ Paid' : '✗ Unpaid';
+                
+                html += `
+                    <div class="student-entry">
+                        <div>
+                            <span class="student-name">${icon} ${escapeHtml(s.name)}</span>
+                            <span class="gender-badge">${genderLabel}</span>
+                            <span class="${statusClass}">${statusLabel}</span>
+                            <span class="fine-amount">₱ ${s.fine.toFixed(2)}</span>
+                        </div>
+                        <div class="entry-actions">
+                            <button class="icon-btn" onclick="editStudent(${s.id})">✏️ Edit</button>
+                            <button class="icon-btn" onclick="deleteStudent(${s.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            studentListContainer.innerHTML = html;
+            document.getElementById('totalAmount').textContent = '₱ ' + total.toFixed(2);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m);
+        }
+
+        // Add student
+        async function addOrUpdateStudent() {
+            const name = nameInput.value.trim();
+            if (!name) {
+                alert('Please enter student name');
+                return;
+            }
+            
+            const data = {
+                name: name,
+                gender: genderSelect.value,
+                fine: parseFloat(fineInput.value) || 0,
+                status: statusSelect.value,
+                section_id: currentSectionId
+            };
+            
+            if (editModeId) {
+                await fetch(`/api/students/${editModeId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                editModeId = null;
+                addBtn.textContent = '➕ ADD';
+            } else {
+                await fetch('/api/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            }
+            
+            clearForm();
+            loadStudents();
+        }
+
+        // Edit student
+        async function editStudent(id) {
+            const student = students.find(s => s.id === id);
+            if (student) {
+                nameInput.value = student.name;
+                genderSelect.value = student.gender;
+                fineInput.value = student.fine;
+                statusSelect.value = student.status;
+                editModeId = id;
+                addBtn.textContent = '✏️ UPDATE';
+            }
+        }
+
+        // Delete student
+        async function deleteStudent(id) {
+            if (confirm('Delete this student?')) {
+                await fetch(`/api/students/${id}`, { method: 'DELETE' });
+                loadStudents();
+            }
+        }
+
+        // Clear form
+        function clearForm() {
+            nameInput.value = '';
+            genderSelect.value = 'male';
+            fineInput.value = '0';
+            statusSelect.value = 'unpaid';
+            editModeId = null;
+            addBtn.textContent = '➕ ADD';
+        }
+
+        // Add section
+        async function addNewSection() {
+            const name = prompt('Enter section name (e.g., BSIS-1B):');
+            if (name) {
+                await fetch('/api/sections', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                loadSections();
+            }
+        }
+
+        // Export CSV
+        function exportCSV() {
+            window.location.href = `/api/export/${currentSectionId}`;
+        }
+
+        // Event listeners
+        sectionSelect.addEventListener('change', () => {
+            currentSectionId = parseInt(sectionSelect.value);
+            loadStudents();
+        });
+        addSectionBtn.addEventListener('click', addNewSection);
+        addBtn.addEventListener('click', addOrUpdateStudent);
+        clearFormBtn.addEventListener('click', clearForm);
+        exportCsvBtn.addEventListener('click', exportCSV);
+        
+        searchInput.addEventListener('input', () => { searchQuery = searchInput.value; renderStudentList(); });
+        filterGenderSelect.addEventListener('change', () => { filterGender = filterGenderSelect.value; renderStudentList(); });
+        filterStatusSelect.addEventListener('change', () => { filterStatus = filterStatusSelect.value; renderStudentList(); });
+        sortBySelect.addEventListener('change', () => { sortBy = sortBySelect.value; renderStudentList(); });
+
+        nameInput.addEventListener('keypress', e => { if (e.key === 'Enter') addOrUpdateStudent(); });
+        
+        // Init
+        loadSections();
+    </script>
+</body>
+</html>
